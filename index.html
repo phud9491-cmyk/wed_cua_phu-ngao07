@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVMXH DANG PHU - Hệ Thống Cho Thuê & Bán Tài Khoản Premium Uy Tín</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f6f6f7',
+                            100: '#e1e2e5',
+                            200: '#c3c5cb',
+                            300: '#9fa2ad',
+                            400: '#797d8b',
+                            500: '#5e6270',
+                            600: '#4a4d59',
+                            700: '#3c3e48',
+                            800: '#2a2b32',
+                            900: '#1a1b1f',
+                            950: '#111215',
+                        },
+                        accent: {
+                            blue: '#3b82f6',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            purple: '#8b5cf6',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar & glassmorphic styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1b1f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c3e48;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5e6270;
+        }
+        .glass-panel {
+            background: rgba(30, 32, 38, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.15);
+        }
+        .glow-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-brand-950 text-gray-200 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-brand-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('store')">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 flex items-center justify-center shadow-lg border border-brand-400/30">
+                    <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent block uppercase">
+                        DVMXH DANG PHU
+                    </span>
+                    <span class="text-[10px] text-gray-400 font-medium tracking-widest block -mt-1 uppercase">Hệ Thống Dịch Vụ Uy Tín</span>
+                </div>
+            </div>
+
+            <!-- Search Bar (Desktop) -->
+            <div class="hidden md:flex flex-1 max-w-md mx-6">
+                <div class="relative w-full">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Tìm kiếm ứng dụng, ID Apple, Netflix, Spotify..." 
+                           class="w-full bg-brand-900/90 border border-brand-700/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-brand-400 transition-colors">
+                </div>
+            </div>
+
+            <!-- User Balance & Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Balance Badge -->
+                <div class="hidden sm:flex items-center bg-brand-900 border border-brand-700/80 rounded-xl px-3.5 py-2 cursor-pointer hover:border-brand-500 transition-colors" onclick="switchTab('dashboard')">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mr-2.5">
+                        <i class="fa-solid fa-wallet text-xs"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-[10px] text-gray-400 uppercase font-semibold leading-tight">Số dư tài khoản</p>
+                        <p id="userBalanceDisplay" class="text-sm font-bold text-emerald-400 leading-tight">0 đ</p>
+                    </div>
+                </div>
+
+                <!-- Recharge Button -->
+                <button onclick="openDepositModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 border border-emerald-400/20 active:scale-95">
+                    <i class="fa-solid fa-circle-plus"></i>
+                    <span>Nạp Tiền</span>
+                </button>
+
+                <!-- Account / Login Button -->
+                <div class="relative" id="userMenuWrapper">
+                    <button id="userBtn" onclick="toggleUserDropdown()" class="bg-brand-800 hover:bg-brand-700 text-gray-200 font-medium text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-brand-700 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-user-circle text-base text-gray-400"></i>
+                        <span id="userNameDisplay" class="hidden md:inline">Đặng Phú</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 ml-0.5"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-56 glass-panel rounded-xl shadow-2xl py-2 z-50 border border-brand-700">
+                        <div class="px-4 py-2.5 border-b border-brand-800">
+                            <p class="text-xs text-gray-400">Đã đăng nhập với tư cách</p>
+                            <p class="text-sm font-bold text-white truncate" id="dropdownUser">DangPhu_VIP</p>
+                            <p class="text-[11px] text-emerald-400 mt-0.5" id="dropdownBalance">Số dư: 0 đ</p>
+                        </div>
+                        <a href="#" onclick="switchTab('dashboard'); toggleUserDropdown(); return false;" class="px-4 py-2 text-sm text-gray-300 hover:bg-brand-800/80 flex items-center gap-2.5">
+                            <i class="fa-solid fa-chart-line text-brand-400 w-4"></i> Bảng quản lý & Lịch sử
+                        </a>
+                        <a href="#" onclick="openDepositModal(); toggleUserDropdown(); return false;" class="px-4 py-2 text-sm text-gray-300 hover:bg-brand-800/80 flex items-center gap-2.5">
+                            <i class="fa-solid fa-qrcode text-brand-400 w-4"></i> Nạp tiền tự động
+                        </a>
+                        <div class="border-t border-brand-800 my-1"></div>
+                        <a href="#" onclick="showToast('Tính năng đăng xuất thành công!', 'info'); toggleUserDropdown(); return false;" class="px-4 py-2 text-sm text-rose-400 hover:bg-brand-800/80 flex items-center gap-2.5">
+                            <i class="fa-solid fa-right-from-bracket w-4"></i> Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="md:hidden px-4 pb-3">
+            <div class="relative w-full">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" onkeyup="filterProducts()" id="searchInputMobile" placeholder="Tìm kiếm ứng dụng, ID Apple..." 
+                       class="w-full bg-brand-900 border border-brand-700 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-200 focus:outline-none">
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+        <!-- TAB 1: STORE / PRODUCT CATALOG -->
+        <div id="storeTab" class="space-y-8">
+            <!-- Hero Banner -->
+            <section class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-brand-900 via-brand-800 to-brand-900 border border-brand-700/60 p-6 sm:p-10 shadow-2xl">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(94,98,112,0.15),transparent_70%)] pointer-events-none"></div>
+                <div class="relative z-10 max-w-2xl space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-700/60 border border-brand-500/30 text-xs text-gray-300">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Hệ thống hoạt động tự động 24/7
+                    </div>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                        Cung Cấp Tài Khoản <span class="bg-gradient-to-r from-brand-300 via-gray-100 to-brand-400 bg-clip-text text-transparent">Premium & ID App</span> Tốc Độ Cao
+                    </h1>
+                    <p class="text-sm sm:text-base text-gray-300 leading-relaxed">
+                        Thuê hoặc Mua tài khoản Netflix, Spotify, Youtube Premium, ChatGPT Plus, ID Apple tải app bản quyền giá cực rẻ. Bảo hành trọn đời dịch vụ.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-4 text-xs sm:text-sm font-medium text-gray-300">
+                        <div class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-400"></i> Bàn giao tức thì</div>
+                        <div class="flex items-center gap-1.5"><i class="fa-solid fa-shield-check text-emerald-400"></i> Bảo hành uy tín</div>
+                        <div class="flex items-center gap-1.5"><i class="fa-solid fa-headset text-blue-400"></i> Hỗ trợ 24/7</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Stats Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                <div class="glass-panel p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-400">Khách hàng</p>
+                        <p class="text-base font-bold text-white">15,400+</p>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-cart-check"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-400">Đơn đã giao</p>
+                        <p class="text-base font-bold text-white">98,500+</p>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-arrows-rotate"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-400">Tự động hóa</p>
+                        <p class="text-base font-bold text-white">100% Instant</p>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-star"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-400">Đánh giá tốt</p>
+                        <p class="text-base font-bold text-white">4.9 / 5.0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Navigation -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-brand-800">
+                <button onclick="filterCategory('all')" class="cat-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-brand-700 text-white border border-brand-500">
+                    <i class="fa-solid fa-border-all mr-1.5"></i> Tất cả sản phẩm
+                </button>
+                <button onclick="filterCategory('premium')" class="cat-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-brand-900 text-gray-400 hover:text-white border border-brand-800">
+                    <i class="fa-solid fa-crown mr-1.5 text-amber-400"></i> Tài khoản Premium
+                </button>
+                <button onclick="filterCategory('id_app')" class="cat-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-brand-900 text-gray-400 hover:text-white border border-brand-800">
+                    <i class="fa-brands fa-apple mr-1.5 text-blue-400"></i> ID Apple & Google Bản Quyền
+                </button>
+                <button onclick="filterCategory('social')" class="cat-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-brand-900 text-gray-400 hover:text-white border border-brand-800">
+                    <i class="fa-solid fa-share-nodes mr-1.5 text-emerald-400"></i> Dịch vụ Mạng xã hội
+                </button>
+            </div>
+
+            <!-- Product Grid -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-amber-500"></i> Danh sách Dịch vụ & Sản phẩm
+                    </h2>
+                    <span id="productCount" class="text-xs text-gray-400 bg-brand-900 px-2.5 py-1 rounded-lg border border-brand-800">Hiển thị 8 sản phẩm</span>
+                </div>
+
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    <!-- Products rendered dynamically via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: USER DASHBOARD / HISTORY -->
+        <div id="dashboardTab" class="hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-brand-800 pb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Bảng Điều Khiển Cá Nhân</h2>
+                    <p class="text-xs text-gray-400">Quản lý số dư, lịch sử mua hàng và thông tin tài khoản</p>
+                </div>
+                <button onclick="switchTab('store')" class="text-xs bg-brand-800 hover:bg-brand-700 text-gray-300 px-3.5 py-2 rounded-xl border border-brand-700 transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại cửa hàng
+                </button>
+            </div>
+
+            <!-- Balance Card & Info -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="glass-panel p-5 rounded-2xl border border-brand-700 bg-gradient-to-br from-brand-900 to-brand-800">
+                    <p class="text-xs font-semibold text-gray-400 uppercase">Số dư hiện tại</p>
+                    <div class="flex items-baseline justify-between mt-2">
+                        <span id="dashBalance" class="text-3xl font-extrabold text-emerald-400">0 đ</span>
+                        <button onclick="openDepositModal()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+                            + Nạp ngay
+                        </button>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-brand-800/80 flex justify-between text-xs text-gray-400">
+                        <span>Tên tài khoản: <strong class="text-gray-200">DangPhu_VIP</strong></span>
+                        <span>Mã ID: <strong class="text-gray-200">DP9821</strong></span>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border border-brand-700">
+                    <p class="text-xs font-semibold text-gray-400 uppercase">Tổng tiền đã nạp</p>
+                    <p id="dashTotalDeposit" class="text-3xl font-extrabold text-blue-400 mt-2">0 đ</p>
+                    <p class="text-xs text-gray-400 mt-4">Tự động cập nhật qua hệ thống VietQR</p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border border-brand-700">
+                    <p class="text-xs font-semibold text-gray-400 uppercase">Sản phẩm đã thuê/mua</p>
+                    <p id="dashTotalOrders" class="text-3xl font-extrabold text-amber-400 mt-2">0</p>
+                    <p class="text-xs text-gray-400 mt-4">Hỗ trợ bảo hành dịch vụ 24/7</p>
+                </div>
+            </div>
+
+            <!-- Transaction History Tables -->
+            <div class="space-y-6">
+                <!-- Purchases History -->
+                <div class="glass-panel rounded-2xl p-5 border border-brand-800">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-box-open text-brand-400"></i> Lịch Sử Thuê & Mua Tài Khoản
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-gray-300">
+                            <thead class="bg-brand-900 text-gray-400 uppercase font-semibold border-b border-brand-800">
+                                <tr>
+                                    <th class="p-3">Thời gian</th>
+                                    <th class="p-3">Sản phẩm</th>
+                                    <th class="p-3">Loại</th>
+                                    <th class="p-3">Giá tiền</th>
+                                    <th class="p-3">Thông tin bàn giao</th>
+                                    <th class="p-3">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderHistoryBody" class="divide-y divide-brand-800/50">
+                                <tr>
+                                    <td colspan="6" class="p-6 text-center text-gray-500">Chưa có giao dịch mua bán nào.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recharge History -->
+                <div class="glass-panel rounded-2xl p-5 border border-brand-800">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i> Lịch Sử Nạp Tiền
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-gray-300">
+                            <thead class="bg-brand-900 text-gray-400 uppercase font-semibold border-b border-brand-800">
+                                <tr>
+                                    <th class="p-3">Thời gian</th>
+                                    <th class="p-3">Phương thức</th>
+                                    <th class="p-3">Mã GD</th>
+                                    <th class="p-3">Số tiền</th>
+                                    <th class="p-3">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="depositHistoryBody" class="divide-y divide-brand-800/50">
+                                <tr>
+                                    <td colspan="5" class="p-6 text-center text-gray-500">Chưa có lịch sử nạp tiền.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-900 border-t border-brand-800 mt-16 text-xs text-gray-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <span class="text-base font-bold text-white">DVMXH DANG PHU</span>
+                </div>
+                <p class="text-gray-400 leading-relaxed">
+                    Hệ thống chuyên kinh doanh, cho thuê ID App, tài khoản Premium cao cấp tự động 24/7. Chất lượng hàng đầu - Bảo hành uy tín.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Danh mục hot</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" onclick="filterCategory('premium'); return false;" class="hover:text-white transition-colors">Cho thuê Netflix Premium 4K</a></li>
+                    <li><a href="#" onclick="filterCategory('premium'); return false;" class="hover:text-white transition-colors">Tài khoản Spotify Family</a></li>
+                    <li><a href="#" onclick="filterCategory('id_app'); return false;" class="hover:text-white transition-colors">ID Apple Tải Goodnotes, Shadowrocket</a></li>
+                    <li><a href="#" onclick="filterCategory('premium'); return false;" class="hover:text-white transition-colors">Nâng cấp Youtube Premium</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Hỗ trợ khách hàng</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" onclick="openDepositModal(); return false;" class="hover:text-white transition-colors">Hướng dẫn nạp tiền VietQR</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Chính sách bảo hành tài khoản</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Điều khoản sử dụng dịch vụ</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Câu hỏi thường gặp (FAQ)</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Kênh liên hệ trực tiếp</h4>
+                <div class="space-y-2.5">
+                    <a href="https://zalo.me" target="_blank" class="flex items-center gap-2.5 bg-brand-800 hover:bg-brand-700 text-gray-200 p-2.5 rounded-xl border border-brand-700 transition-colors">
+                        <i class="fa-solid fa-comment text-blue-400 text-base"></i>
+                        <span>Zalo Hỗ Trợ: <strong>0901 234 567</strong></span>
+                    </a>
+                    <a href="https://t.me" target="_blank" class="flex items-center gap-2.5 bg-brand-800 hover:bg-brand-700 text-gray-200 p-2.5 rounded-xl border border-brand-700 transition-colors">
+                        <i class="fa-brands fa-telegram text-sky-400 text-base"></i>
+                        <span>Telegram Admin: <strong>@dangphu_dvmxh</strong></span>
+                    </a>
+                </div>
+                <p class="mt-3 text-[11px] text-gray-500">Thời gian hỗ trợ: 08:00 - 23:00 hàng ngày</p>
+            </div>
+        </div>
+
+        <div class="border-t border-brand-800/60 py-4 text-center text-gray-500">
+            <p>© 2026 DVMXH DANG PHU. All Rights Reserved. Built for speed & security.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL: PRODUCT DETAILS & PURCHASE/RENT -->
+    <div id="productModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+        <div class="glass-panel w-full max-w-lg rounded-2xl border border-brand-700 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="p-5 border-b border-brand-800 flex justify-between items-center bg-brand-900">
+                <div class="flex items-center gap-3">
+                    <img id="modalImg" src="" alt="" class="w-10 h-10 rounded-xl object-cover border border-brand-700">
+                    <div>
+                        <h3 id="modalTitle" class="text-base font-bold text-white">Tên sản phẩm</h3>
+                        <span id="modalCategory" class="text-[11px] px-2 py-0.5 rounded bg-brand-800 text-brand-300 font-medium">Danh mục</span>
+                    </div>
+                </div>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-5 space-y-4 overflow-y-auto flex-1">
+                <div id="modalDescription" class="text-xs text-gray-300 leading-relaxed bg-brand-900/60 p-3.5 rounded-xl border border-brand-800">
+                    Mô tả chi tiết sản phẩm ở đây...
+                </div>
+
+                <!-- Select Action (Buy or Rent) -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Chọn hình thức giao dịch</label>
+                    <div class="grid grid-cols-2 gap-3" id="actionTypeContainer">
+                        <button type="button" id="typeRentBtn" onclick="selectActionType('rent')" class="p-3 rounded-xl border border-brand-600 bg-brand-800 text-left transition-all">
+                            <span class="text-xs text-gray-400 block">Thuê tài khoản</span>
+                            <span id="modalRentPrice" class="text-sm font-bold text-amber-400">0 đ/ngày</span>
+                        </button>
+                        <button type="button" id="typeBuyBtn" onclick="selectActionType('buy')" class="p-3 rounded-xl border border-brand-800 bg-brand-900 text-left transition-all">
+                            <span class="text-xs text-gray-400 block">Mua vĩnh viễn/Gói</span>
+                            <span id="modalBuyPrice" class="text-sm font-bold text-emerald-400">0 đ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Duration or Quantity Option -->
+                <div id="durationWrapper">
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Thời gian sử dụng</label>
+                    <select id="rentalDuration" onchange="updateTotalPrice()" class="w-full bg-brand-900 border border-brand-700 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none">
+                        <option value="1">1 Ngày</option>
+                        <option value="7">7 Ngày (Giảm 10%)</option>
+                        <option value="30" selected>30 Ngày (Tiết kiệm nhất)</option>
+                    </select>
+                </div>
+
+                <!-- Features list -->
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 uppercase block mb-1.5">Quyền lợi đi kèm</span>
+                    <ul class="text-xs text-gray-300 space-y-1" id="modalFeatures">
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> Bảo hành 1 đổi 1 trong thời hạn sử dụng.</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> Bàn giao tài khoản tự động ngay sau khi bấm xác nhận.</li>
+                    </ul>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="bg-brand-900 p-3.5 rounded-xl border border-brand-800 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs text-gray-400 block">Tổng tiền thanh toán:</span>
+                        <span id="modalTotalPrice" class="text-lg font-extrabold text-emerald-400">0 đ</span>
+                    </div>
+                    <div class="text-right text-[11px] text-gray-400">
+                        <span>Số dư còn lại: </span>
+                        <strong id="modalUserBalance" class="text-gray-200">0 đ</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="p-4 bg-brand-900 border-t border-brand-800 flex gap-3">
+                <button onclick="closeProductModal()" class="w-1/3 py-2.5 bg-brand-800 hover:bg-brand-700 text-gray-300 text-xs font-semibold rounded-xl border border-brand-700 transition-colors">
+                    Hủy bỏ
+                </button>
+                <button onclick="confirmOrder()" class="w-2/3 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all border border-emerald-400/30">
+                    Xác nhận thanh toán
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RECHARGE WALLET / NAP TIEN -->
+    <div id="depositModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+        <div class="glass-panel w-full max-w-xl rounded-2xl border border-brand-700 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="p-4 sm:p-5 border-b border-brand-800 flex justify-between items-center bg-brand-900">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-qrcode"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Nạp Tiền Vào Tài Khoản</h3>
+                        <p class="text-[11px] text-gray-400">Hệ thống quét QR VietQR tự động cộng tiền 10s</p>
+                    </div>
+                </div>
+                <button onclick="closeDepositModal()" class="text-gray-400 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="p-5 space-y-5 overflow-y-auto flex-1">
+                <!-- Step 1: Input Amount -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-gray-300 uppercase">1. Nhập số tiền muốn nạp (VNĐ)</label>
+                    <div class="relative">
+                        <input type="number" id="depositAmount" value="50000" step="10000" min="10000" oninput="updateQR()"
+                               class="w-full bg-brand-900 border border-brand-700 rounded-xl pl-4 pr-12 py-2.5 text-base font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-semibold">VNĐ</span>
+                    </div>
+                    <!-- Quick Select Amount -->
+                    <div class="flex flex-wrap gap-2 pt-1">
+                        <button onclick="setDepositAmount(20000)" class="px-2.5 py-1 bg-brand-900 hover:bg-brand-800 text-xs text-gray-300 rounded-lg border border-brand-800">20.000đ</button>
+                        <button onclick="setDepositAmount(50000)" class="px-2.5 py-1 bg-brand-900 hover:bg-brand-800 text-xs text-gray-300 rounded-lg border border-brand-800">50.000đ</button>
+                        <button onclick="setDepositAmount(100000)" class="px-2.5 py-1 bg-brand-900 hover:bg-brand-800 text-xs text-gray-300 rounded-lg border border-brand-800">100.000đ</button>
+                        <button onclick="setDepositAmount(200000)" class="px-2.5 py-1 bg-brand-900 hover:bg-brand-800 text-xs text-gray-300 rounded-lg border border-brand-800">200.000đ</button>
+                        <button onclick="setDepositAmount(500000)" class="px-2.5 py-1 bg-brand-900 hover:bg-brand-800 text-xs text-gray-300 rounded-lg border border-brand-800">500.000đ</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Select Bank -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-gray-300 uppercase">2. Chọn Ngân Hàng Thanh Toán</label>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button onclick="selectBank('MB')" id="bank-MB" class="bank-opt border-2 border-emerald-500 bg-brand-800 p-2.5 rounded-xl text-center transition-all">
+                            <span class="text-xs font-bold text-white block">MB BANK</span>
+                            <span class="text-[10px] text-gray-400">Nhanh nhất</span>
+                        </button>
+                        <button onclick="selectBank('VCB')" id="bank-VCB" class="bank-opt border border-brand-800 bg-brand-900 p-2.5 rounded-xl text-center transition-all opacity-80 hover:opacity-100">
+                            <span class="text-xs font-bold text-white block">VIETCOMBANK</span>
+                            <span class="text-[10px] text-gray-400">Tự động</span>
+                        </button>
+                        <button onclick="selectBank('MOMO')" id="bank-MOMO" class="bank-opt border border-brand-800 bg-brand-900 p-2.5 rounded-xl text-center transition-all opacity-80 hover:opacity-100">
+                            <span class="text-xs font-bold text-white block">MOMO</span>
+                            <span class="text-[10px] text-gray-400">Ví điện tử</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment Details & VietQR Code -->
+                <div class="bg-brand-900 p-4 rounded-xl border border-brand-800 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <!-- QR Box -->
+                    <div class="flex flex-col items-center justify-center p-2 bg-white rounded-xl shadow-inner">
+                        <img id="qrImage" src="" alt="VietQR" class="w-44 h-44 object-contain">
+                        <p class="text-[10px] text-gray-600 font-medium mt-1">Quét bằng App Ngân hàng / MoMo</p>
+                    </div>
+
+                    <!-- Details Box -->
+                    <div class="space-y-2.5 text-xs">
+                        <div>
+                            <span class="text-gray-400 block">Ngân hàng:</span>
+                            <strong id="displayBankName" class="text-white font-bold">MB BANK (Ngân hàng Quân Đội)</strong>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block">Số tài khoản:</span>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <strong id="displaySTK" class="text-emerald-400 font-mono text-sm font-bold">090123456789</strong>
+                                <button onclick="copyToClipboard('090123456789', 'Số tài khoản')" class="px-2 py-0.5 bg-brand-800 hover:bg-brand-700 text-gray-200 text-[10px] rounded border border-brand-700">
+                                    <i class="fa-solid fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block">Chủ tài khoản:</span>
+                            <strong class="text-white uppercase font-bold">ĐẶNG PHÚ</strong>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block">Nội dung chuyển khoản (Bắt buộc):</span>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <strong id="displayMemo" class="text-amber-400 font-mono font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">NAP DANGPHU DP9821</strong>
+                                <button onclick="copyToClipboard(document.getElementById('displayMemo').innerText, 'Nội dung')" class="px-2 py-0.5 bg-brand-800 hover:bg-brand-700 text-gray-200 text-[10px] rounded border border-brand-700">
+                                    <i class="fa-solid fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Test Button -->
+                <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-flask text-amber-400 text-sm"></i>
+                        <span class="text-xs text-amber-200">Thử nghiệm hệ thống nạp tiền?</span>
+                    </div>
+                    <button onclick="simulateRechargeSuccess()" class="bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                        Mô phỏng Chuyển Tiền Thành Công
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 bg-brand-900 border-t border-brand-800 text-center">
+                <p class="text-[11px] text-gray-400">Vui lòng giữ nguyên nội dung chuyển khoản để hệ thống cộng tiền tự động trong 10-30 giây.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Global State Management
+        let userState = {
+            userId: 'DP9821',
+            username: 'DangPhu_VIP',
+            balance: 100000, // Initial balance 100,000 VND
+            totalDeposit: 100000,
+            purchases: [],
+            deposits: [
+                { id: 'TX98123', amount: 100000, bank: 'MB Bank', time: '2026-03-28 10:15', status: 'Thành công' }
+            ]
+        };
+
+        // Products Data List
+        const products = [
+            {
+                id: 'prod_1',
+                name: 'Netflix Premium 4K Ultra HD',
+                category: 'premium',
+                rentPrice: 15000, // Per day
+                buyPrice: 85000,  // Month slot
+                icon: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=200&auto=format&fit=crop&q=80',
+                badge: 'Hot nhất',
+                badgeColor: 'bg-red-500/20 text-red-400 border-red-500/30',
+                desc: 'Xem phim 4K HDR không giới hạn. Tài khoản cấp profile riêng, có mã PIN bảo mật, sử dụng ổn định trên TV, Phone, PC.',
+                features: ['Xem chuẩn 4K HDR UltraHD', 'Cấp Profile riêng có PIN', 'Bảo hành full thời gian thuê']
+            },
+            {
+                id: 'prod_2',
+                name: 'Spotify Premium Chính Chủ',
+                category: 'premium',
+                rentPrice: 5000,
+                buyPrice: 35000,
+                icon: 'https://images.unsplash.com/photo-1614680376593-902f749f7edc?w=200&auto=format&fit=crop&q=80',
+                badge: 'Bán chạy',
+                badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                desc: 'Nâng cấp chính chủ tài khoản Spotify cá nhân. Nghe nhạc chất lượng cao lossless, không quảng cáo, tải nhạc offline.',
+                features: ['Gia hạn chính chủ mail bạn', 'Không mất playlist cũ', 'Nghe nhạc offline chất lượng cao']
+            },
+            {
+                id: 'prod_3',
+                name: 'Youtube Premium + Music',
+                category: 'premium',
+                rentPrice: 4000,
+                buyPrice: 29000,
+                icon: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=200&auto=format&fit=crop&q=80',
+                badge: 'Khuyên dùng',
+                badgeColor: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+                desc: 'Xem Youtube hoàn toàn không quảng cáo, phát nhạc trong nền màn hình khóa, bao gồm Youtube Music Premium.',
+                features: ['Nâng cấp chính chủ Gmail', 'Tắt màn hình vẫn nghe nhạc', 'Không có bất kỳ quảng cáo nào']
+            },
+            {
+                id: 'prod_4',
+                name: 'ChatGPT Plus (GPT-4o & Sora)',
+                category: 'premium',
+                rentPrice: 20000,
+                buyPrice: 190000,
+                icon: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=200&auto=format&fit=crop&q=80',
+                badge: 'AI VIP',
+                badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+                desc: 'Sử dụng mô hình GPT-4o, DALL-E 3 tạo ảnh, phân tích dữ liệu, tốc độ phản hồi siêu nhanh không nghẽn mạng.',
+                features: ['Truy cập mô hình GPT-4o mới nhất', 'Tạo ảnh DALL-E 3 sắc nét', 'Sử dụng Advanced Data Analysis']
+            },
+            {
+                id: 'prod_5',
+                name: 'ID Apple Tải GoodNotes 6 Full',
+                category: 'id_app',
+                rentPrice: 10000,
+                buyPrice: 45000,
+                icon: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&auto=format&fit=crop&q=80',
+                badge: 'iOS App',
+                badgeColor: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+                desc: 'Cho thuê/bán ID Apple đã mua bản quyền ứng dụng ghi chú GoodNotes 6 vĩnh viễn. Đăng nhập Appstore tải trực tiếp.',
+                features: ['Đăng nhập AppStore an toàn', 'Mở khóa đầy đủ GoodNotes 6', 'Hướng dẫn đăng nhập chi tiết']
+            },
+            {
+                id: 'prod_6',
+                name: 'ID Apple Tải Shadowrocket & VPN',
+                category: 'id_app',
+                rentPrice: 8000,
+                buyPrice: 30000,
+                icon: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=200&auto=format&fit=crop&q=80',
+                badge: 'iOS Tool',
+                badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+                desc: 'ID Apple đăng nhập tải ứng dụng Shadowrocket (Tên lửa) chuyển vùng, hack Data 4G high speed mượt mà.',
+                features: ['Tải Shadowrocket bản quyền', 'Cấu hình sẵn file SNI 4G', 'Bảo hành không bị khóa tài khoản']
+            },
+            {
+                id: 'prod_7',
+                name: 'Tăng 1,000 Follow Facebook Real',
+                category: 'social',
+                rentPrice: 0,
+                buyPrice: 49000,
+                icon: 'https://images.unsplash.com/photo-1562577309-4932fdd64cd1?w=200&auto=format&fit=crop&q=80',
+                badge: 'Buff MXH',
+                badgeColor: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
+                desc: 'Dịch vụ tăng 1,000 theo dõi trang cá nhân hoặc Fanpage Facebook. Người dùng thật tại Việt Nam, không tuột follow.',
+                features: ['Tăng nhanh trong 24h', 'An toàn 100% không mất nick', 'Bảo hành tuột trong 30 ngày']
+            },
+            {
+                id: 'prod_8',
+                name: 'Tăng 10,000 View TikTok Tốc Độ',
+                category: 'social',
+                rentPrice: 0,
+                buyPrice: 25000,
+                icon: 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=200&auto=format&fit=crop&q=80',
+                badge: 'TikTok SEO',
+                badgeColor: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
+                desc: 'Đẩy lượt xem video TikTok giúp dễ vào xu hướng. Tốc độ hoàn thành siêu tốc chỉ vài phút sau khi đặt hàng.',
+                features: ['Tăng ngay sau 5 phút', 'Hỗ trợ đẩy Video vào xu hướng', 'Chỉ cần gửi Link Video']
+            }
+        ];
+
+        // Currently selected item in Modal
+        let selectedProduct = null;
+        let selectedAction = 'rent'; // 'rent' or 'buy'
+        let currentBank = 'MB';
+
+        // DOM Loaded Init
+        window.addEventListener('DOMContentLoaded', () => {
+            updateUserUI();
+            renderProducts(products);
+            updateQR();
+
+            // Click outside to close user dropdown
+            document.addEventListener('click', (e) => {
+                const wrapper = document.getElementById('userMenuWrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    document.getElementById('userDropdown').classList.add('hidden');
+                }
+            });
+        });
+
+        // Format Currency Helper
+        function formatVND(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', 'đ');
+        }
+
+        // Render Products
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            const countText = document.getElementById('productCount');
+            countText.innerText = `Hiển thị ${items.length} sản phẩm`;
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-500">
+                    <i class="fa-solid fa-box-open text-4xl mb-3 block"></i>
+                    Không tìm thấy sản phẩm nào phù hợp!
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(p => `
+                <div class="glass-panel rounded-2xl overflow-hidden border border-brand-800 glow-card transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <!-- Thumbnail & Badge -->
+                        <div class="relative h-40 overflow-hidden bg-brand-900">
+                            <img src="${p.icon}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                            <span class="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md ${p.badgeColor}">
+                                ${p.badge}
+                            </span>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 space-y-2.5">
+                            <h3 class="font-bold text-white text-sm line-clamp-1">${p.name}</h3>
+                            <p class="text-xs text-gray-400 line-clamp-2">${p.desc}</p>
+                            
+                            <!-- Price Tag -->
+                            <div class="pt-2 border-t border-brand-800/80 flex items-center justify-between text-xs">
+                                ${p.rentPrice > 0 ? `
+                                    <div>
+                                        <span class="text-[10px] text-gray-500 block">Giá thuê chỉ:</span>
+                                        <span class="font-bold text-amber-400">${formatVND(p.rentPrice)}/ngày</span>
+                                    </div>
+                                ` : ''}
+                                <div>
+                                    <span class="text-[10px] text-gray-500 block">Giá mua/Gói:</span>
+                                    <span class="font-bold text-emerald-400">${formatVND(p.buyPrice)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="p-4 pt-0 grid grid-cols-2 gap-2">
+                        ${p.rentPrice > 0 ? `
+                            <button onclick="openProductModal('${p.id}', 'rent')" class="w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-semibold py-2 rounded-xl transition-colors">
+                                <i class="fa-solid fa-clock mr-1"></i> Thuê ngay
+                            </button>
+                        ` : ''}
+                        <button onclick="openProductModal('${p.id}', 'buy')" class="${p.rentPrice > 0 ? '' : 'col-span-2'} w-full bg-brand-700 hover:bg-brand-600 text-white text-xs font-semibold py-2 rounded-xl border border-brand-500/30 transition-colors">
+                            <i class="fa-solid fa-cart-shopping mr-1"></i> Mua ngay
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter Products by Category
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-700', 'text-white', 'border-brand-500');
+                btn.classList.add('bg-brand-900', 'text-gray-400', 'border-brand-800');
+            });
+            event.currentTarget.classList.remove('bg-brand-900', 'text-gray-400', 'border-brand-800');
+            event.currentTarget.classList.add('bg-brand-700', 'text-white', 'border-brand-500');
+
+            if (cat === 'all') {
+                renderProducts(products);
+            } else {
+                const filtered = products.filter(p => p.category === cat);
+                renderProducts(filtered);
+            }
+        }
+
+        // Search Input Filter
+        function filterProducts() {
+            const query = (document.getElementById('searchInput').value || document.getElementById('searchInputMobile').value).toLowerCase();
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                p.desc.toLowerCase().includes(query)
+            );
+            renderProducts(filtered);
+        }
+
+        // Tab Switching Logic
+        function switchTab(tab) {
+            if (tab === 'store') {
+                document.getElementById('storeTab').classList.remove('hidden');
+                document.getElementById('dashboardTab').classList.add('hidden');
+            } else if (tab === 'dashboard') {
+                document.getElementById('storeTab').classList.add('hidden');
+                document.getElementById('dashboardTab').classList.remove('hidden');
+                renderDashboardTables();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toggle User Dropdown
+        function toggleUserDropdown() {
+            document.getElementById('userDropdown').classList.toggle('hidden');
+        }
+
+        // Open Product Details Modal
+        function openProductModal(productId, defaultAction) {
+            selectedProduct = products.find(p => p.id === productId);
+            if (!selectedProduct) return;
+
+            document.getElementById('modalImg').src = selectedProduct.icon;
+            document.getElementById('modalTitle').innerText = selectedProduct.name;
+            document.getElementById('modalCategory').innerText = selectedProduct.category === 'premium' ? 'Tài khoản Premium' : (selectedProduct.category === 'id_app' ? 'ID App iOS/Android' : 'Dịch vụ MXH');
+            document.getElementById('modalDescription').innerText = selectedProduct.desc;
+            
+            document.getElementById('modalRentPrice').innerText = selectedProduct.rentPrice > 0 ? `${formatVND(selectedProduct.rentPrice)}/ngày` : 'Không hỗ trợ';
+            document.getElementById('modalBuyPrice').innerText = formatVND(selectedProduct.buyPrice);
+
+            // Features
+            document.getElementById('modalFeatures').innerHTML = selectedProduct.features.map(f => `
+                <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> ${f}</li>
+            `).join('');
+
+            // Hide/Show Rent Option if rentPrice is 0
+            const rentBtn = document.getElementById('typeRentBtn');
+            if (selectedProduct.rentPrice <= 0) {
+                rentBtn.classList.add('hidden');
+                selectActionType('buy');
+            } else {
+                rentBtn.classList.remove('hidden');
+                selectActionType(defaultAction || 'rent');
+            }
+
+            document.getElementById('modalUserBalance').innerText = formatVND(userState.balance);
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        // Action Type selection inside Modal (Buy or Rent)
+        function selectActionType(type) {
+            selectedAction = type;
+            const rentBtn = document.getElementById('typeRentBtn');
+            const buyBtn = document.getElementById('typeBuyBtn');
+            const durationWrapper = document.getElementById('durationWrapper');
+
+            if (type === 'rent') {
+                rentBtn.className = 'p-3 rounded-xl border-2 border-amber-500 bg-brand-800 text-left transition-all';
+                buyBtn.className = 'p-3 rounded-xl border border-brand-800 bg-brand-900 text-left transition-all opacity-70';
+                durationWrapper.classList.remove('hidden');
+            } else {
+                buyBtn.className = 'p-3 rounded-xl border-2 border-emerald-500 bg-brand-800 text-left transition-all';
+                rentBtn.className = 'p-3 rounded-xl border border-brand-800 bg-brand-900 text-left transition-all opacity-70';
+                durationWrapper.classList.add('hidden');
+            }
+            updateTotalPrice();
+        }
+
+        // Calculate Total Price
+        function updateTotalPrice() {
+            if (!selectedProduct) return;
+            let total = 0;
+            if (selectedAction === 'rent') {
+                const days = parseInt(document.getElementById('rentalDuration').value);
+                total = selectedProduct.rentPrice * days;
+                if (days === 7) total = total * 0.9; // 10% discount
+                if (days === 30) total = total * 0.75; // 25% discount
+            } else {
+                total = selectedProduct.buyPrice;
+            }
+            document.getElementById('modalTotalPrice').innerText = formatVND(total);
+        }
+
+        // Confirm Order Process
+        function confirmOrder() {
+            if (!selectedProduct) return;
+
+            let total = 0;
+            let detail = '';
+            if (selectedAction === 'rent') {
+                const days = document.getElementById('rentalDuration').value;
+                total = selectedProduct.rentPrice * days;
+                if (days == 7) total = total * 0.9;
+                if (days == 30) total = total * 0.75;
+                detail = `Thuê ${days} Ngày`;
+            } else {
+                total = selectedProduct.buyPrice;
+                detail = 'Mua Vĩnh Viễn / Gói Trọn Gói';
+            }
+
+            if (userState.balance < total) {
+                showToast('Số dư tài khoản không đủ. Vui lòng nạp thêm tiền!', 'error');
+                closeProductModal();
+                openDepositModal();
+                return;
+            }
+
+            // Deduct balance
+            userState.balance -= total;
+            
+            // Mock credentials for delivered account
+            const mockCreds = `TK: dangphu_vip_${Math.floor(Math.random()*1000)}@dvmxh.com | Mật khẩu: DangPhuPass2026`;
+
+            // Record Purchase History
+            userState.purchases.unshift({
+                time: new Date().toLocaleString('vi-VN'),
+                productName: selectedProduct.name,
+                type: detail,
+                price: total,
+                info: mockCreds,
+                status: 'Hoàn thành'
+            });
+
+            updateUserUI();
+            closeProductModal();
+            showToast(`Thanh toán thành công ${formatVND(total)}! Đã bàn giao tài khoản.`, 'success');
+
+            // Switch to dashboard to view details
+            switchTab('dashboard');
+        }
+
+        // DEPOSIT / RECHARGE MODAL LOGIC
+        function openDepositModal() {
+            document.getElementById('depositModal').classList.remove('hidden');
+            updateQR();
+        }
+
+        function closeDepositModal() {
+            document.getElementById('depositModal').classList.add('hidden');
+        }
+
+        function setDepositAmount(amt) {
+            document.getElementById('depositAmount').value = amt;
+            updateQR();
+        }
+
+        function selectBank(bank) {
+            currentBank = bank;
+            document.querySelectorAll('.bank-opt').forEach(b => {
+                b.classList.remove('border-2', 'border-emerald-500', 'bg-brand-800');
+                b.classList.add('border-brand-800', 'bg-brand-900', 'opacity-80');
+            });
+
+            const activeBtn = document.getElementById(`bank-${bank}`);
+            activeBtn.classList.remove('border-brand-800', 'bg-brand-900', 'opacity-80');
+            activeBtn.classList.add('border-2', 'border-emerald-500', 'bg-brand-800');
+
+            if (bank === 'MB') {
+                document.getElementById('displayBankName').innerText = 'MB BANK (Ngân hàng Quân Đội)';
+                document.getElementById('displaySTK').innerText = '090123456789';
+            } else if (bank === 'VCB') {
+                document.getElementById('displayBankName').innerText = 'VIETCOMBANK (Ngoại Thương VN)';
+                document.getElementById('displaySTK').innerText = '10188998899';
+            } else {
+                document.getElementById('displayBankName').innerText = 'VÍ điện tử MOMO';
+                document.getElementById('displaySTK').innerText = '090123456789';
+            }
+
+            updateQR();
+        }
+
+        // Generate VietQR dynamic Image URL
+        function updateQR() {
+            const amount = document.getElementById('depositAmount').value || 50000;
+            const memo = `NAP DANGPHU ${userState.userId}`;
+            document.getElementById('displayMemo').innerText = memo;
+
+            let bankId = 'MB';
+            let accountNo = '090123456789';
+
+            if (currentBank === 'VCB') {
+                bankId = 'VCB';
+                accountNo = '10188998899';
+            } else if (currentBank === 'MOMO') {
+                // MoMo QR Fallback format via VietQR QuickLink API
+                bankId = 'MB'; // Fallback
+            }
+
+            // VietQR API Quick Link
+            const qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(memo)}&accountName=DANG%20PHU`;
+            document.getElementById('qrImage').src = qrUrl;
+        }
+
+        // Simulate Successful Recharge (Testing feature)
+        function simulateRechargeSuccess() {
+            const amount = parseInt(document.getElementById('depositAmount').value) || 50000;
+            userState.balance += amount;
+            userState.totalDeposit += amount;
+
+            userState.deposits.unshift({
+                id: 'TX' + Math.floor(100000 + Math.random() * 900000),
+                amount: amount,
+                bank: currentBank === 'MB' ? 'MB Bank' : (currentBank === 'VCB' ? 'Vietcombank' : 'Momo'),
+                time: new Date().toLocaleString('vi-VN'),
+                status: 'Thành công'
+            });
+
+            updateUserUI();
+            closeDepositModal();
+            showToast(`Nạp tiền thành công! +${formatVND(amount)} đã được cộng vào tài khoản.`, 'success');
+        }
+
+        // Update User UI elements across page
+        function updateUserUI() {
+            const formattedBal = formatVND(userState.balance);
+            document.getElementById('userBalanceDisplay').innerText = formattedBal;
+            document.getElementById('dropdownBalance').innerText = `Số dư: ${formattedBal}`;
+            document.getElementById('dashBalance').innerText = formattedBal;
+            document.getElementById('dashTotalDeposit').innerText = formatVND(userState.totalDeposit);
+            document.getElementById('dashTotalOrders').innerText = userState.purchases.length;
+        }
+
+        // Render Dashboard Tables
+        function renderDashboardTables() {
+            // Render Purchases
+            const orderBody = document.getElementById('orderHistoryBody');
+            if (userState.purchases.length === 0) {
+                orderBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-500">Chưa có giao dịch thuê/mua sản phẩm nào.</td></tr>`;
+            } else {
+                orderBody.innerHTML = userState.purchases.map(p => `
+                    <tr class="hover:bg-brand-900/50">
+                        <td class="p-3 text-gray-400">${p.time}</td>
+                        <td class="p-3 font-semibold text-white">${p.productName}</td>
+                        <td class="p-3 text-amber-400">${p.type}</td>
+                        <td class="p-3 font-bold text-emerald-400">${formatVND(p.price)}</td>
+                        <td class="p-3 font-mono text-[11px] text-gray-300">
+                            <span class="bg-brand-900 border border-brand-700 px-2 py-1 rounded select-all block w-max">${p.info}</span>
+                        </td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold text-[10px]">${p.status}</span></td>
+                    </tr>
+                `).join('');
+            }
+
+            // Render Deposits
+            const depBody = document.getElementById('depositHistoryBody');
+            if (userState.deposits.length === 0) {
+                depBody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500">Chưa có lịch sử nạp tiền.</td></tr>`;
+            } else {
+                depBody.innerHTML = userState.deposits.map(d => `
+                    <tr class="hover:bg-brand-900/50">
+                        <td class="p-3 text-gray-400">${d.time}</td>
+                        <td class="p-3 font-semibold text-gray-300">${d.bank}</td>
+                        <td class="p-3 font-mono text-gray-400">${d.id}</td>
+                        <td class="p-3 font-bold text-emerald-400">+${formatVND(d.amount)}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold text-[10px]">${d.status}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Copy Text Helper
+        function copyToClipboard(text, label) {
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(`Đã sao chép ${label} vào bộ nhớ tạm!`, 'info');
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let iconClass = 'fa-circle-info text-blue-400';
+            let borderColor = 'border-blue-500/40';
+
+            if (type === 'success') {
+                iconClass = 'fa-circle-check text-emerald-400';
+                borderColor = 'border-emerald-500/40';
+            } else if (type === 'error') {
+                iconClass = 'fa-triangle-exclamation text-rose-400';
+                borderColor = 'border-rose-500/40';
+            }
+
+            toast.className = `glass-panel p-3.5 rounded-xl border ${borderColor} text-xs text-gray-200 shadow-xl flex items-center gap-3 transform transition-all duration-300 translate-y-2 pointer-events-auto`;
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-base"></i>
+                <span class="flex-1 font-medium">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
